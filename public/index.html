@@ -20,7 +20,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Caveat:wght@700&family=DM+Serif+Display:ital@0;1&family=LXGW+WenKai+TC&family=Noto+Sans+TC:wght@100..900&family=Saira:wght@100..900&family=Space+Mono:wght@400;700&family=VT323&display=swap">
-  <link rel="stylesheet" href="assets/style.css?v=10">
+  <link rel="stylesheet" href="assets/style.css?v=11">
 </head>
 <body>
   <header class="topbar">
@@ -273,28 +273,26 @@
           <label class="toggle"><input type="checkbox" data-show="weather"><span data-i18n="show.weather"></span></label>
           <label class="toggle"><input type="checkbox" data-show="temp"><span data-i18n="show.temp"></span></label>
           <label class="toggle"><input type="checkbox" data-show="location"><span data-i18n="show.location"></span></label>
-          <label class="toggle"><input type="checkbox" data-show="camera"><span data-i18n="show.camera"></span></label>
         </div>
         <div class="grid2 mt-s">
           <div class="field"><label for="f-date" data-i18n="f.date"></label><input id="f-date" type="date" class="picker-input"></div>
           <div class="field"><label for="f-time" data-i18n="f.time"></label><input id="f-time" type="time" class="picker-input"></div>
           <div class="field full">
             <label data-i18n="f.dateFormat"></label>
-            <div class="seg seg-full">
-              <button class="seg-btn" data-date-format="slash" type="button">2026/10/24</button>
-              <button class="seg-btn" data-date-format="dot" type="button">2026.10.24</button>
-              <button class="seg-btn" data-date-format="short" type="button" data-i18n="f.dateShort"></button>
+            <div class="seg seg-full seg-compact">
+              <button class="seg-btn" data-date-format="slash" type="button"></button>
+              <button class="seg-btn" data-date-format="dash" type="button"></button>
+              <button class="seg-btn" data-date-format="dot" type="button"></button>
+              <button class="seg-btn" data-date-format="short" type="button"></button>
             </div>
           </div>
           <div class="field full">
             <label data-i18n="f.timeFormat"></label>
             <div class="seg seg-full">
-              <button class="seg-btn" data-time-format="24" type="button" data-i18n="f.time24"></button>
-              <button class="seg-btn" data-time-format="12" type="button" data-i18n="f.time12"></button>
+              <button class="seg-btn" data-time-format="24" type="button"></button>
+              <button class="seg-btn" data-time-format="12" type="button"></button>
             </div>
           </div>
-          <div class="field full"><label for="f-camera" data-i18n="f.camera"></label><input id="f-camera" autocomplete="off"></div>
-          <div class="field full"><label for="f-shot" data-i18n="f.shot"></label><input id="f-shot" autocomplete="off" placeholder="23mm  f/2  1/250s  ISO200"></div>
         </div>
       </section>
 
@@ -484,6 +482,6 @@
   <script src="assets/quotes.js?v=2"></script>
   <script src="assets/templates.js?v=7"></script>
   <script src="assets/templates-more.js?v=5"></script>
-  <script src="assets/app.js?v=10"></script>
+  <script src="assets/app.js?v=11"></script>
 </body>
 </html>

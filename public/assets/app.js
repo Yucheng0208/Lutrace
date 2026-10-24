@@ -310,15 +310,16 @@
   }
   const pad2 = (n) => String(n).padStart(2, '0');
   const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
-  function fmtDate(dp) {
+  function fmtDate(dp, format = settings.dateFormat) {
     if (dp.y == null) return '';
-    if (settings.dateFormat === 'dot') return `${dp.y}.${pad2(dp.mo)}.${pad2(dp.day)}`;
-    if (settings.dateFormat === 'short') return I18n.lang === 'en' ? `${MONTHS[dp.mo - 1][0]}${MONTHS[dp.mo - 1].slice(1).toLowerCase()} ${dp.day}` : `${dp.mo}月${dp.day}日`; // 中文、日文相同
+    if (format === 'dot') return `${dp.y}.${pad2(dp.mo)}.${pad2(dp.day)}`;
+    if (format === 'dash') return `${dp.y}-${pad2(dp.mo)}-${pad2(dp.day)}`;
+    if (format === 'short') return I18n.lang === 'en' ? `${MONTHS[dp.mo - 1][0]}${MONTHS[dp.mo - 1].slice(1).toLowerCase()} ${dp.day}` : `${dp.mo}月${dp.day}日`; // 中文、日文相同
     return `${dp.y}/${pad2(dp.mo)}/${pad2(dp.day)}`;
   }
-  function fmtTime(dp) {
+  function fmtTime(dp, format = settings.timeFormat) {
     if (dp.h == null) return '';
-    if (settings.timeFormat === '12') {
+    if (format === '12') {
       const h12 = dp.h % 12 || 12;
       if (I18n.lang === 'en') return `${h12}:${pad2(dp.mi)} ${dp.h < 12 ? 'AM' : 'PM'}`;
       if (I18n.lang === 'ja') return `${dp.h < 12 ? '午前' : '午後'} ${h12}:${pad2(dp.mi)}`;
@@ -338,18 +339,6 @@
     if (c === '' || c == null || isNaN(parseFloat(c))) return '';
     const v = parseFloat(c);
     return settings.tempUnit === 'F' ? `${Math.round(v * 9 / 5 + 32)}°F` : `${Math.round(v)}°C`;
-  }
-  function cameraOf(p) {
-    if (p.cameraText != null) return p.cameraText;
-    const brand = Frame.brandName(p.exif.make);
-    const model = p.exif.model || '';
-    if (!brand) return model;
-    return model.toLowerCase().startsWith(brand.toLowerCase()) ? model : `${brand} ${model}`.trim();
-  }
-  function shotOf(p) {
-    if (p.shotText != null) return p.shotText;
-    const e = p.exif;
-    return [e.focal && `${e.focal}mm`, e.fnum && `f/${e.fnum}`, e.exposure && `${e.exposure}s`, e.iso && `ISO${e.iso}`].filter(Boolean).join('  ');
   }
   function accentOf(p) {
     if (settings.accent !== 'auto') return settings.accent;
@@ -391,8 +380,8 @@
       weatherKey: wKey,
       temp: s.temp ? fmtTemp(p.exif.temp) : '',
       location: s.location ? (p.exif.location || '').trim() : '',
-      camera: s.camera ? cameraOf(p) : '',
-      shot: s.camera ? shotOf(p) : '',
+      camera: '', // 不顯示相機與拍攝參數
+      shot: '',
       accent: accentOf(p),
       pal: p.analysis,
       still: p.still,
@@ -606,21 +595,30 @@
     syncMoodTag(p);
     $('f-artist').value = settings.artist;
     $('f-album').value = settings.album;
-    $('f-camera').value = has ? cameraOf(p) : '';
-    $('f-shot').value = has ? shotOf(p) : '';
     const dp = has ? dateParts(p) : {};
     $('f-date').value = dp.y != null ? `${dp.y}-${pad2(dp.mo)}-${pad2(dp.day)}` : '';
     $('f-time').value = dp.h != null ? `${pad2(dp.h)}:${pad2(dp.mi)}` : '';
     $('f-location').value = has ? (p.exif.location || '') : '';
     $('f-weather').value = has ? weatherLabel(p.exif.weather) : '';
     $('f-temp').value = has ? (p.exif.temp ?? '') : '';
-    ['f-quote', 'quote-gen', 'f-camera', 'f-shot', 'f-date', 'f-time', 'f-location', 'f-weather', 'f-temp', 'btn-detect', 'btn-my-location']
+    ['f-quote', 'quote-gen', 'f-date', 'f-time', 'f-location', 'f-weather', 'f-temp', 'btn-detect', 'btn-my-location']
       .forEach((id) => { $(id).disabled = !has; });
     syncPlaceMode();
     updatePlaceStatus();
   }
 
+  /** 日期、時間格式按鈕上的範例：用今天的日期與現在時間 */
+  function syncFormatExamples() {
+    const now = new Date();
+    const dp = { y: now.getFullYear(), mo: now.getMonth() + 1, day: now.getDate(), h: now.getHours(), mi: now.getMinutes() };
+    document.querySelectorAll('[data-date-format]').forEach((b) => { b.textContent = fmtDate(dp, b.dataset.dateFormat); });
+    document.querySelectorAll('[data-time-format]').forEach((b) => {
+      b.textContent = `${t(b.dataset.timeFormat === '12' ? 'f.time12' : 'f.time24')} ${fmtTime(dp, b.dataset.timeFormat)}`;
+    });
+  }
+
   function syncSettingsUi() {
+    syncFormatExamples();
     document.querySelectorAll('[data-show]').forEach((el) => { el.checked = !!settings.show[el.dataset.show]; });
     document.querySelectorAll('[data-date-format]').forEach((b) => b.classList.toggle('active', b.dataset.dateFormat === settings.dateFormat));
     document.querySelectorAll('[data-time-format]').forEach((b) => b.classList.toggle('active', b.dataset.timeFormat === settings.timeFormat));
@@ -1250,8 +1248,6 @@
   });
   $('f-artist').addEventListener('input', (e) => { settings.artist = e.target.value; changed(); });
   $('f-album').addEventListener('input', (e) => { settings.album = e.target.value; changed(); });
-  $('f-camera').addEventListener('input', (e) => { const p = active(); if (p) { p.cameraText = e.target.value; renderPreview(); scheduleThumbs(); } });
-  $('f-shot').addEventListener('input', (e) => { const p = active(); if (p) { p.shotText = e.target.value; renderPreview(); scheduleThumbs(); } });
   document.querySelectorAll('[data-show]').forEach((el) => el.addEventListener('change', () => { settings.show[el.dataset.show] = el.checked; changed(); }));
   function bindSeg(attr, apply) {
     document.querySelectorAll(`[data-${attr}]`).forEach((b) => b.addEventListener('click', () => { apply(b.dataset[attr.replace(/-(\w)/g, (_, c) => c.toUpperCase())]); syncSettingsUi(); changed(); }));
@@ -1521,6 +1517,8 @@
   });
 
   /* ---------- 啟動 ---------- */
+
+  setInterval(syncFormatExamples, 30000); // 範例時間跟著走
 
   document.querySelectorAll('.copyright-year').forEach((el) => { el.textContent = new Date().getFullYear(); });
 
