@@ -1,0 +1,2 @@
+ffmpeg.wasm (@ffmpeg/ffmpeg) — MIT — https://github.com/ffmpegwasm/ffmpeg.wasm
+The ffmpeg core (loaded from jsDelivr at runtime) includes FFmpeg and x264 under GPL.

@@ -1,0 +1,21 @@
+{
+  "name": "guanghen",
+  "version": "1.0.0",
+  "private": true,
+  "description": "光痕 Lutrace — youth-style cover frames",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "start": "node scripts/dev-server.mjs"
+  },
+  "devDependencies": {
+    "@ffmpeg/core": "^0.12.10",
+    "@ffmpeg/ffmpeg": "^0.12.15",
+    "@ffmpeg/util": "^0.12.2",
+    "heic-to": "^1.6.6",
+    "libraw-wasm": "^1.6.0",
+    "simple-icons": "^16.35.0",
+    "wrangler": "^4.90.1"
+  },
+  "type": "module"
+}

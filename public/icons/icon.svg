@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="125 133 1000 1000">
+<defs>
+  <linearGradient id="bTL" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#f24fa0"/><stop offset="1" stop-color="#ff8a78"/></linearGradient>
+  <linearGradient id="bTR" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a650ff"/><stop offset=".5" stop-color="#e45cf0"/><stop offset="1" stop-color="#8e4dff"/></linearGradient>
+  <linearGradient id="bBL" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#ff7a8a"/><stop offset=".5" stop-color="#f25cc8"/><stop offset="1" stop-color="#c050ff"/></linearGradient>
+  <linearGradient id="bBR" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#e050ff"/><stop offset="1" stop-color="#8a55ff"/></linearGradient>
+  <linearGradient id="card" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e6e4ff"/><stop offset=".6" stop-color="#f3eafa"/><stop offset="1" stop-color="#fbe9f3"/></linearGradient>
+  <linearGradient id="m1" x1="0" y1="0" x2=".6" y2="1"><stop offset="0" stop-color="#ffb47a"/><stop offset=".45" stop-color="#ec5cc4"/><stop offset="1" stop-color="#5a46ff"/></linearGradient>
+  <linearGradient id="m2" x1="0" y1="0" x2=".5" y2="1"><stop offset="0" stop-color="#f0a8e8"/><stop offset=".5" stop-color="#a77cff"/><stop offset="1" stop-color="#5e66ff"/></linearGradient>
+  <linearGradient id="sun" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffc98a"/><stop offset=".55" stop-color="#f3a0c8"/><stop offset="1" stop-color="#b98cff"/></linearGradient>
+  <radialGradient id="star" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ffffff"/><stop offset=".22" stop-color="#ffd2b0"/><stop offset=".6" stop-color="#ff8a7a"/><stop offset="1" stop-color="#f0508e"/></radialGradient>
+  <linearGradient id="dot" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff9ab8"/><stop offset="1" stop-color="#c060ff"/></linearGradient>
+  <clipPath id="cardClip"><rect x="335" y="395" width="582" height="507" rx="70"/></clipPath>
+</defs>
+<g fill="none" stroke-width="64" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M254 472 V352 Q254 287 319 287 H454" stroke="url(#bTL)"/>
+  <path d="M802 287 H935 Q1000 287 1000 352 V472" stroke="url(#bTR)"/>
+  <path d="M254 795 V913 Q254 978 319 978 H454" stroke="url(#bBL)"/>
+  <path d="M802 978 H935 Q1000 978 1000 913 V795" stroke="url(#bBR)"/>
+</g>
+<rect x="335" y="395" width="582" height="507" rx="70" fill="url(#card)"/>
+<g clip-path="url(#cardClip)">
+  <path d="M335 470 L520 395 H335 Z" fill="#ffffff" fill-opacity=".35"/>
+  <circle cx="660" cy="593" r="79" fill="url(#sun)"/>
+  <path d="M672 770 L738 708 Q772 678 806 710 L917 822 V902 H790 Z" fill="url(#m2)"/>
+  <path d="M335 786 L478 648 Q515 614 552 650 L806 902 H335 Z" fill="url(#m1)"/>
+</g>
+<rect x="336.5" y="396.5" width="579" height="504" rx="69" fill="none" stroke="#ffffff" stroke-opacity=".7" stroke-width="3"/>
+<circle cx="772" cy="430" r="60" fill="#ffb0a0" fill-opacity=".25"/>
+<path d="M772 318 Q781 421 872 430 Q781 439 772 545 Q763 439 672 430 Q763 421 772 318 Z" fill="url(#star)"/>
+<circle cx="730" cy="336" r="16" fill="url(#dot)"/>
+<circle cx="885" cy="490" r="20" fill="url(#dot)"/>
+<circle cx="950" cy="587" r="26" fill="url(#dot)"/>
+</svg>
