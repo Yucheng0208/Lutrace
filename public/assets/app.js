@@ -598,15 +598,6 @@
     return c;
   }
 
-  async function addSample() {
-    const c = makeSampleCanvas(1600, 1600);
-    const blob = await new Promise((r) => c.toBlob(r, 'image/jpeg', 0.92));
-    const now = new Date();
-    await addFiles([new File([blob], t('sample.name'), { type: 'image/jpeg', lastModified: now.getTime() })], {
-      sample: { time: '17:42', weather: 'clear', temp: '27', location: I18n.lang === 'en' ? 'Tamsui, Taipei' : '新北市 淡水', make: 'FUJIFILM', model: 'X100VI', focal: '23', fnum: '2.0', exposure: '1/250', iso: '200' },
-    });
-  }
-
   /* ---------- 表單 ---------- */
 
   function fillForm(p) {
@@ -1129,7 +1120,6 @@
 
   $('file-input').addEventListener('change', (e) => { addFiles(e.target.files); e.target.value = ''; });
   $('dz-add').addEventListener('click', () => $('file-input').click());
-  $('try-sample').addEventListener('click', addSample);
 
   const stagePanel = document.querySelector('.stage-panel');
   let dragDepth = 0;
