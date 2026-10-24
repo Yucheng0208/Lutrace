@@ -820,3 +820,15 @@ h2 { font-size: 13px; margin: 0 0 10px; font-weight: 650; }
 /* 日期格式四個選項排成 2×2 */
 .seg.seg-compact { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2px; }
 .seg-compact .seg-btn { font-variant-numeric: tabular-nums; }
+
+/* 從歌詞挑一句 */
+.lyr-pick { margin-top: 8px; border: 1px solid var(--border); border-radius: 12px; padding: 10px; background: var(--bg); }
+.lyr-head { display: flex; align-items: center; gap: 8px; }
+.lyr-song { flex: 1; min-width: 0; font-weight: 700; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lyr-lines { list-style: none; margin: 8px 0 0; padding: 0; max-height: 280px; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; }
+.lyr-lines li {
+  padding: 7px 10px; border-radius: 8px; cursor: pointer; font-size: 14px; line-height: 1.4; color: var(--text);
+  border: 1px solid transparent; user-select: none;
+}
+.lyr-lines li:hover { background: var(--hover); }
+.lyr-lines li.on { background: var(--active); border-color: var(--primary); color: var(--primary); font-weight: 650; }

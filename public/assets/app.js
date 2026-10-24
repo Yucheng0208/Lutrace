@@ -314,7 +314,7 @@
     if (dp.y == null) return '';
     if (format === 'dot') return `${dp.y}.${pad2(dp.mo)}.${pad2(dp.day)}`;
     if (format === 'dash') return `${dp.y}-${pad2(dp.mo)}-${pad2(dp.day)}`;
-    if (format === 'short') return I18n.lang === 'en' ? `${MONTHS[dp.mo - 1][0]}${MONTHS[dp.mo - 1].slice(1).toLowerCase()} ${dp.day}` : `${dp.mo}月${dp.day}日`; // 中文、日文相同
+    if (format === 'short') return I18n.lang === 'en' ? `${MONTHS[dp.mo - 1][0]}${MONTHS[dp.mo - 1].slice(1).toLowerCase()} ${dp.day}, ${dp.y}` : `${dp.y}年${dp.mo}月${dp.day}日`; // 中文、日文相同
     return `${dp.y}/${pad2(dp.mo)}/${pad2(dp.day)}`;
   }
   function fmtTime(dp, format = settings.timeFormat) {
@@ -1373,6 +1373,7 @@
     if (info.album) settings.album = info.album;
     saveSettings();
     if (p) { p.quote = info.title || p.quote; p.quoteAuto = false; }
+    if (info.title) $('lyr-input').value = [info.title, info.artist].filter(Boolean).join(' ');
     if (tplNow().tag !== 'music') { settings.tpl = 'player'; syncSkins(); syncGallery(); syncVideoUi(); saveSettings(); }
     fillForm(active());
     renderPreview(); scheduleThumbs();
@@ -1469,6 +1470,77 @@
       catch (err) { console.warn(err); $('song-status').textContent = t('st.musicFailed'); }
       c.disabled = false;
     }
+  });
+
+  // 從歌詞挑一句：LRCLIB 開放歌詞資料庫（瀏覽器直接查詢、免金鑰）
+  let lyrResults = [], lyrLines = [], lyrSel = [];
+  const LYR_MAX_LINES = 2;
+  function lyricLines(text) {
+    return String(text || '').split(/\r?\n/).map((l) => l.trim()).filter((l, i, a) => l && l !== a[i - 1]);
+  }
+  function renderLyrResults() {
+    $('lyr-results').innerHTML = lyrResults.map((r, i) => `
+      <li class="song-item" data-lyr="${i}" style="cursor:pointer;grid-template-columns:minmax(0,1fr)">
+        <div style="min-width:0"><div class="t">${escapeHtml(r.trackName || '')}</div><div class="a">${escapeHtml([r.artistName, r.albumName].filter(Boolean).join(' · '))}</div></div>
+      </li>`).join('');
+  }
+  function renderLyrLines() {
+    $('lyr-lines').innerHTML = lyrLines.map((l, i) => `<li data-line="${i}" class="${lyrSel.includes(i) ? 'on' : ''}">${escapeHtml(l)}</li>`).join('');
+    $('lyr-sel').textContent = lyrSel.length ? t('lyr.sel', { n: lyrSel.length }) : '';
+    $('lyr-apply').disabled = !lyrSel.length || !active();
+  }
+  function openLyrics(r) {
+    lyrLines = lyricLines(r.plainLyrics);
+    lyrSel = [];
+    $('lyr-song').textContent = [r.trackName, r.artistName].filter(Boolean).join(' — ');
+    $('lyr-results').hidden = true;
+    $('lyr-pick').hidden = false;
+    renderLyrLines();
+  }
+  $('lyr-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const q = $('lyr-input').value.trim();
+    if (!q) return;
+    $('lyr-status').textContent = t('lyr.loading');
+    $('lyr-pick').hidden = true;
+    $('lyr-results').hidden = false;
+    lyrResults = [];
+    renderLyrResults();
+    try {
+      const res = await fetch(`https://lrclib.net/api/search?q=${encodeURIComponent(q)}`, { credentials: 'omit' });
+      if (!res.ok) throw new Error(`lrclib ${res.status}`);
+      lyrResults = (await res.json()).filter((r) => r.plainLyrics && !r.instrumental).slice(0, 8);
+      $('lyr-status').textContent = lyrResults.length ? '' : t('lyr.none');
+    } catch (err) {
+      console.warn(err);
+      $('lyr-status').textContent = t('lyr.none');
+    }
+    renderLyrResults();
+    if (lyrResults.length === 1) openLyrics(lyrResults[0]);
+  });
+  $('lyr-results').addEventListener('click', (e) => {
+    const li = e.target.closest('[data-lyr]');
+    if (li) openLyrics(lyrResults[Number(li.dataset.lyr)]);
+  });
+  $('lyr-back').addEventListener('click', () => { $('lyr-pick').hidden = true; $('lyr-results').hidden = false; });
+  // 點一行選取；點相鄰的一行延伸成兩行，其他情況重新選
+  $('lyr-lines').addEventListener('click', (e) => {
+    const li = e.target.closest('[data-line]');
+    if (!li) return;
+    const i = Number(li.dataset.line);
+    if (lyrSel.includes(i)) lyrSel = lyrSel.filter((x) => x !== i);
+    else if (lyrSel.length && lyrSel.length < LYR_MAX_LINES && lyrSel.some((x) => Math.abs(x - i) === 1)) lyrSel = [...lyrSel, i].sort((a, b) => a - b);
+    else lyrSel = [i];
+    renderLyrLines();
+  });
+  $('lyr-apply').addEventListener('click', () => {
+    const p = active();
+    if (!p || !lyrSel.length) return;
+    p.quote = lyrSel.map((i) => lyrLines[i]).join('　').slice(0, 80);
+    p.quoteAuto = false;
+    $('f-quote').value = p.quote;
+    $('lyr-status').textContent = t('lyr.applied');
+    renderPreview(); scheduleThumbs();
   });
 
   // 背景音樂（輸出 MP4 時加入）
