@@ -7,7 +7,7 @@
   const {
     F, mix, alpha, lum, ink, tone, rr, setFont, spacing, clip, wrap, fitWrap, fitSize, text, lines,
     shadow, noShadow, rand, hashStr, blurred, cover, weatherIcon, icon, barcode, dateStamp, paperNoise,
-    weatherText, artistOf, slotDims, T, A,
+    weatherText, artistOf, slotDims, T, A, accentPaint,
   } = Templates.kit;
   const def = Templates.define;
   const PI2 = Math.PI * 2;
@@ -100,7 +100,7 @@
       ctx.fillStyle = '#fff'; ctx.fillRect(170, 110, 1060, 1150);
       noShadow(ctx);
       photo();
-      ctx.fillStyle = d.accent; ctx.fillRect(200, 1150, 1000, 80);
+      ctx.fillStyle = accentPaint(ctx, d, 200, 1150, 1000, 80); ctx.fillRect(200, 1150, 1000, 80);
       text(ctx, `${(d.album || 'MIXTAPE').toUpperCase()}  ·  ${quoteOr(d)}`, 230, 1203, { size: 34, weight: 700, color: ink(d.accent), max: 940, ls: 2 });
       // 卡帶本體
       const bx = 150, by = 1340, bw = 1100, bh = 680;
@@ -180,7 +180,7 @@
         const y = 1230 + i * 150;
         const on = i === 0;
         rr(ctx, 90, y, 110, 110, 10);
-        ctx.fillStyle = on ? d.accent : alpha(fg, 0.1); ctx.fill();
+        ctx.fillStyle = on ? accentPaint(ctx, d, 90, y, 110, 110) : alpha(fg, 0.1); ctx.fill();
         if (on) eq(ctx, 113, y + 25, 64, 60, '#fff', an.t);
         else { setFont(ctx, 40, F.round, 700); text(ctx, String(i + 1), 145, y + 70, { size: 40, weight: 700, color: mute, align: 'center', fam: F.round }); }
         text(ctx, tt, 235, y + 52, { size: 44, weight: 700, color: on ? hi : fg, max: 760 });
@@ -251,7 +251,7 @@
       const fg = dark ? '#fff' : sk.ink;
       text(ctx, quoteOr(d), 210, 1305, { size: 50, weight: 700, color: fg, max: 620 });
       text(ctx, artistOf(d), 210, 1360, { size: 34, color: alpha(fg, 0.6), max: 620 });
-      ctx.beginPath(); ctx.arc(960, 1320, 62, 0, PI2); ctx.fillStyle = d.accent; ctx.fill();
+      ctx.beginPath(); ctx.arc(960, 1320, 62, 0, PI2); ctx.fillStyle = accentPaint(ctx, d, 898, 1258, 124, 124); ctx.fill();
       icon(ctx, an.playing ? 'pause' : 'play', 962, 1320, 50, ink(d.accent));
       progressBar(ctx, 210, 1412, 780, 10, an.progress, alpha(fg, 0.15), d.accent, false);
     },
@@ -272,7 +272,7 @@
       const acc = dark ? mix(sk.deep, '#ffffff', 0.3) : mix(sk.deep, '#000000', 0.12);
       shadow(ctx, 'rgba(0,0,0,.3)', 50, 0, 20);
       rr(ctx, x0, y0, w, h, 40); ctx.fillStyle = paper; ctx.fill(); noShadow(ctx);
-      rr(ctx, x0, y0, w, 200, [40, 40, 0, 0]); ctx.fillStyle = acc; ctx.fill();
+      rr(ctx, x0, y0, w, 200, [40, 40, 0, 0]); ctx.fillStyle = d.accent2 ? accentPaint(ctx, d, x0, y0, w, 200) : acc; ctx.fill();
       text(ctx, T(d, '登機證  BOARDING PASS', 'BOARDING PASS'), x0 + 40, y0 + 92, { size: 46, weight: 900, color: '#fff', ls: 3, max: w - 300 });
       text(ctx, `${d.album || 'LUTRACE'} AIR`.toUpperCase(), x0 + 40, y0 + 150, { size: 30, color: 'rgba(255,255,255,.8)', fam: F.mono, ls: 2, max: w - 300 });
       ctx.save(); ctx.translate(x0 + w - 110, y0 + 100); ctx.rotate(-0.5);
@@ -414,7 +414,7 @@
       text(ctx, 'POST CARD', rx, 190, { size: 76, color: fg, fam: F.serif, ls: 6, max: rw - 260 });
       // 郵票框
       rr(ctx, rx + rw - 210, 90, 190, 230, 6); ctx.setLineDash([10, 8]); ctx.lineWidth = 4; ctx.strokeStyle = alpha(fg, 0.4); ctx.stroke(); ctx.setLineDash([]);
-      ctx.fillStyle = d.accent; ctx.fillRect(rx + rw - 190, 110, 150, 190);
+      ctx.fillStyle = accentPaint(ctx, d, rx + rw - 190, 110, 150, 190); ctx.fillRect(rx + rw - 190, 110, 150, 190);
       icon(ctx, 'heart', rx + rw - 115, 205, 80, '#fff', { fill: true });
       ctx.strokeStyle = alpha(fg, 0.25); ctx.lineWidth = 3;
       ctx.beginPath(); ctx.moveTo(rx, 360); ctx.lineTo(rx + rw, 360); ctx.stroke();

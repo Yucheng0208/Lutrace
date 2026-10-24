@@ -221,6 +221,15 @@
     ctx.drawImage(src, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh);
   }
 
+  /** 主題色填色：選了漸層主題色時（d.accent2）回傳對角漸層，否則回傳純色 */
+  function accentPaint(ctx, d, x, y, w, h) {
+    if (!d.accent2) return d.accent;
+    const stops = d.accentStops && d.accentStops.length > 1 ? d.accentStops : [d.accent, d.accent2];
+    const g = ctx.createLinearGradient(x, y, x + w, y + h);
+    stops.forEach((c, i) => g.addColorStop(i / (stops.length - 1), c));
+    return g;
+  }
+
   /** 鎖定畫面等可調整的字型 */
   function fontOf(key) {
     return { round: F.round, sans: F.sans, serif: F.serif, pixel: F.pixel, hand: F.hand, display: F.display }[key] || F.round;
@@ -246,7 +255,8 @@
       ctx.fillStyle = hi; ctx.fillRect(x, y, w, h);
     } else if (kind === 'gradient') {
       const g = ctx.createLinearGradient(x, y, x + w, y + h);
-      g.addColorStop(0, alpha(d.accent, 0.92)); g.addColorStop(1, alpha(mix(d.accent, '#7a5cff', 0.65), 0.92));
+      const stops = d.accent2 ? (d.accentStops || [d.accent, d.accent2]) : [d.accent, mix(d.accent, '#7a5cff', 0.65)];
+      stops.forEach((c, i) => g.addColorStop(i / (stops.length - 1), alpha(c, 0.92)));
       ctx.fillStyle = g; ctx.fillRect(x, y, w, h);
     } else { ctx.fillStyle = 'rgba(255,255,255,.94)'; ctx.fillRect(x, y, w, h); }
     ctx.restore();
@@ -716,7 +726,7 @@
       }
       // 圓標（跟著轉）
       ctx.save(); ctx.translate(cx, cy); ctx.rotate(spin); ctx.translate(-cx, -cy);
-      ctx.beginPath(); ctx.arc(cx, cy, 170, 0, Math.PI * 2); ctx.fillStyle = d.accent; ctx.fill();
+      ctx.beginPath(); ctx.arc(cx, cy, 170, 0, Math.PI * 2); ctx.fillStyle = accentPaint(ctx, d, cx - 170, cy - 170, 340, 340); ctx.fill();
       const lab = ink(d.accent);
       text(ctx, (d.album || 'SIDE A').toUpperCase(), cx, cy - 50, { size: 30, weight: 700, color: lab, align: 'center', max: 190, fam: F.round });
       text(ctx, d.date || '', cx, cy + 58, { size: 26, color: lab, align: 'center', max: 190 });
@@ -1019,7 +1029,7 @@
         setFont(ctx, 32, F.sans, 900); spacing(ctx, 2);
         const w = Math.min(ctx.measureText(tg2.toUpperCase()).width, L.W * 0.6);
         spacing(ctx, 0);
-        ctx.fillStyle = d.accent; ctx.fillRect(60, y - 36, w + 28, 48);
+        ctx.fillStyle = accentPaint(ctx, d, 60, y - 36, w + 28, 48); ctx.fillRect(60, y - 36, w + 28, 48);
         text(ctx, tg2.toUpperCase(), 74, y, { size: 32, weight: 900, color: ink(d.accent), ls: 2, max: L.W * 0.6 });
         y += 62;
       });
@@ -1063,7 +1073,7 @@
       photo();
       // 資訊欄
       const acc = sk.deep;
-      ctx.fillStyle = acc; ctx.fillRect(px, y0, PW, 96);
+      ctx.fillStyle = d.accent2 ? accentPaint(ctx, d, px, y0, PW, 96) : acc; ctx.fillRect(px, y0, PW, 96);
       text(ctx, `LIVE TOUR ${d.y || ''}`.trim(), px + 40, y0 + 64, { size: 40, weight: 700, color: ink(acc), fam: F.mono, ls: 4, max: PW - 80 });
       const q = d.quote || T(d, '今天的主打歌', 'Track of the day');
       const fz = fitWrap(ctx, q, PW - 80, 66, F.sans, 900, 3, 40);
@@ -1136,7 +1146,7 @@
         const ql = wrap(ctx, q, nw - 230, 2);
         const nh = 150 + ql.length * 52;
         const nc = panel(ctx, d, L, nx, ny, nw, nh, 48, st.panel, fg);
-        rr(ctx, nx + 34, ny + 36, 96, 96, 24); ctx.fillStyle = d.accent; ctx.fill();
+        rr(ctx, nx + 34, ny + 36, 96, 96, 24); ctx.fillStyle = accentPaint(ctx, d, nx + 34, ny + 36, 96, 96); ctx.fill();
         icon(ctx, 'music', nx + 82, ny + 84, 56, ink(d.accent, '#111', '#fff'));
         text(ctx, d.album || 'Memories', nx + 160, ny + 76, { size: 38, weight: 700, color: nc, max: 520 });
         text(ctx, T(d, '現在', 'now'), nx + nw - 40, ny + 76, { size: 32, color: alpha(nc, 0.55), align: 'right' });
@@ -1306,7 +1316,7 @@
     };
     ctx.textBaseline = 'alphabetic';
     // 點綴色跟著配色（隨光色則用照片主色或自訂主題色）
-    const d = skin.chroma ? o.d : { ...o.d, accent: skin.deep };
+    const d = skin.chroma ? o.d : { ...o.d, accent: skin.deep, accent2: null, accentStops: null };
     tpl.draw(ctx, P.L, d, photo, skin);
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     return { W: P.W, H: P.H, slotPx: sp, crop, k };
@@ -1315,7 +1325,7 @@
   const kit = {
     F, rgb, hex, mix, alpha, lum, ink, tone, rr, setFont, spacing, clip, wrap, fitWrap, fitSize, text, lines,
     shadow, noShadow, rand, hashStr, blurred, cover, cloudPath, weatherIcon, icon, barcode, dateStamp, paperNoise,
-    weatherText, metaLine, artistOf, slotDims, T, A, panel, fontOf,
+    weatherText, metaLine, artistOf, slotDims, T, A, panel, fontOf, accentPaint,
   };
   window.Templates = { LIST, PALETTE, define: def, kit, byId, skinOf, render, aspectFor, fitCrop, ensureFonts, weatherIcon, tone, ink, mix };
 })();

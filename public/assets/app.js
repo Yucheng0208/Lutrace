@@ -14,7 +14,8 @@
     tpl: 'ipod',
     skins: {},            // 每個模板各自記住配色（10 種）
     modes: {},            // 每個模板各自記住版型
-    accent: 'auto',       // auto：從照片取主色
+    accent: 'auto',       // auto：從照片取主色；gradient：漸層
+    gradient: ['#ff5c8a', '#7a5cff'], // 漸層主題色的色段（2–5 段）
     stamp: true,          // 橘色日期印記
     artist: '',
     album: '',
@@ -340,7 +341,9 @@
     const v = parseFloat(c);
     return settings.tempUnit === 'F' ? `${Math.round(v * 9 / 5 + 32)}°F` : `${Math.round(v)}°C`;
   }
+  const gradStops = () => (Array.isArray(settings.gradient) && settings.gradient.length >= 2 ? settings.gradient : DEFAULTS.gradient);
   function accentOf(p) {
+    if (settings.accent === 'gradient') return gradStops()[0];
     if (settings.accent !== 'auto') return settings.accent;
     return (p && p.analysis && p.analysis.accent) || '#ff5c8a';
   }
@@ -383,6 +386,8 @@
       camera: '', // 不顯示相機與拍攝參數
       shot: '',
       accent: accentOf(p),
+      accent2: settings.accent === 'gradient' ? gradStops()[gradStops().length - 1] : null,
+      accentStops: settings.accent === 'gradient' ? gradStops() : null,
       pal: p.analysis,
       still: p.still,
       stamp: settings.stamp,
@@ -607,6 +612,25 @@
     updatePlaceStatus();
   }
 
+  /* 漸層主題色：可自訂 2–5 個色段與顏色 */
+  const GRAD_MIN = 2, GRAD_MAX = 5;
+  function gradCss(stops) { return `linear-gradient(90deg, ${stops.join(', ')})`; }
+  function syncGradEditor() {
+    const on = settings.accent === 'gradient';
+    $('grad-editor').hidden = !on;
+    const stops = gradStops();
+    document.querySelector('.swatch-grad').style.background = gradCss(stops);
+    if (!on) return;
+    $('grad-bar').style.background = gradCss(stops);
+    $('grad-stops').innerHTML = stops.map((c, i) => `
+      <label class="swatch grad-stop" style="--sw:${c}" title="${i + 1}">
+        <input type="color" value="${c}" data-grad="${i}" aria-label="${t('f.grad.stop', { n: i + 1 })}">
+      </label>`).join('');
+    $('grad-add').disabled = stops.length >= GRAD_MAX;
+    $('grad-remove').disabled = stops.length <= GRAD_MIN;
+    $('grad-count').textContent = t('f.grad.count', { n: stops.length });
+  }
+
   /** 日期格式按鈕上的範例用今天的日期 */
   function syncFormatExamples() {
     const now = new Date();
@@ -616,6 +640,7 @@
 
   function syncSettingsUi() {
     syncFormatExamples();
+    syncGradEditor();
     document.querySelectorAll('[data-show]').forEach((el) => { el.checked = !!settings.show[el.dataset.show]; });
     document.querySelectorAll('[data-date-format]').forEach((b) => b.classList.toggle('active', b.dataset.dateFormat === settings.dateFormat));
     document.querySelectorAll('[data-time-format]').forEach((b) => b.classList.toggle('active', b.dataset.timeFormat === settings.timeFormat));
@@ -654,13 +679,13 @@
     const [pal, mode] = skinNow().split('|');
     const accent = accentOf(active() || samplePhoto());
     $('skin-chips').innerHTML = tp.skins.map((s) => {
-      const c = s.chroma ? { paper: Templates.tone(accent, 0.9), deep: accent } : s;
+      const c = s.chroma ? { paper: Templates.tone(accent, 0.9), deep: settings.accent === 'gradient' ? gradStops()[gradStops().length - 1] : accent } : s;
       return `<button class="pal-chip${s.id === pal ? ' active' : ''}" type="button" data-skin="${s.id}" style="--c1:${c.paper};--c2:${c.deep}">
         <i aria-hidden="true"></i><span>${escapeHtml(nameOf(s))}</span></button>`;
     }).join('');
     syncPalPages(true);
     $('mode-field').hidden = !tp.modes.length;
-    $('mode-chips').innerHTML = tp.modes.map((m) => `<button class="chip${m.id === mode ? ' active' : ''}" type="button" data-mode="${m.id}">${escapeHtml(nameOf(m))}</button>`).join('');
+    $('mode-chips').innerHTML = tp.modes.map((m) => `<button class="seg-btn${m.id === mode ? ' active' : ''}" type="button" data-mode="${m.id}">${escapeHtml(nameOf(m))}</button>`).join('');
   }
 
   /* 配色滑動列：一頁五個，切到目前選的那一頁，並更新頁點與箭頭 */
@@ -1199,8 +1224,36 @@
     syncSkins();
     changed();
   });
+  $('grad-stops').addEventListener('input', (e) => {
+    const i = Number(e.target.dataset.grad);
+    if (isNaN(i)) return;
+    const stops = [...gradStops()];
+    stops[i] = e.target.value;
+    settings.gradient = stops;
+    e.target.parentElement.style.setProperty('--sw', e.target.value);
+    $('grad-bar').style.background = gradCss(stops);
+    document.querySelector('.swatch-grad').style.background = gradCss(stops);
+    changed({ thumbs: false });
+  });
+  $('grad-stops').addEventListener('change', () => { syncSkins(); scheduleThumbs(); });
+  $('grad-add').addEventListener('click', () => {
+    const stops = [...gradStops()];
+    if (stops.length >= GRAD_MAX) return;
+    // 在最後兩段之間補一個中間色
+    stops.splice(stops.length - 1, 0, Templates.mix(stops[stops.length - 2], stops[stops.length - 1], 0.5));
+    settings.gradient = stops;
+    syncGradEditor(); syncSkins(); changed();
+  });
+  $('grad-remove').addEventListener('click', () => {
+    const stops = [...gradStops()];
+    if (stops.length <= GRAD_MIN) return;
+    stops.splice(stops.length - 2, 1);
+    settings.gradient = stops;
+    syncGradEditor(); syncSkins(); changed();
+  });
+
   // 主題色用在「隨光色」：選了主題色就切到隨光色
-  document.querySelectorAll('[data-accent]').forEach((b) => b.addEventListener('click', () => { settings.accent = b.dataset.accent; settings.skins[settings.tpl] = 'chroma'; syncSettingsUi(); changed(); }));
+  document.querySelectorAll('[data-accent]').forEach((b) => b.addEventListener('click', () => { settings.accent = b.dataset.accent; settings.skins[settings.tpl] = 'chroma'; syncSettingsUi(); syncSkins(); changed(); }));
   $('accent-picker').addEventListener('input', (e) => { settings.accent = e.target.value; settings.skins[settings.tpl] = 'chroma'; syncSettingsUi(); changed({ thumbs: false }); });
   $('accent-picker').addEventListener('change', () => scheduleThumbs());
   $('opt-stamp').addEventListener('change', (e) => { settings.stamp = e.target.checked; changed(); });

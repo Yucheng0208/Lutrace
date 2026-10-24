@@ -20,7 +20,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Caveat:wght@700&family=DM+Serif+Display:ital@0;1&family=LXGW+WenKai+TC&family=Noto+Sans+TC:wght@100..900&family=Saira:wght@100..900&family=Space+Mono:wght@400;700&family=VT323&display=swap">
-  <link rel="stylesheet" href="assets/style.css?v=15">
+  <link rel="stylesheet" href="assets/style.css?v=18">
 </head>
 <body>
   <header class="topbar">
@@ -150,18 +150,28 @@
         </div>
         <div class="field" id="mode-field" hidden>
           <label data-i18n="f.mode"></label>
-          <div id="mode-chips" class="chips wrap-chips"></div>
+          <div id="mode-chips" class="seg seg-full"></div>
         </div>
         <div class="field">
           <label data-i18n="f.accent"></label>
           <div class="color-row">
             <button class="chip-color" data-accent="auto" type="button" data-i18n="f.accent.auto"></button>
+            <button class="swatch swatch-grad" data-accent="gradient" type="button" data-i18n-aria="f.accent.grad" data-i18n-title="f.accent.grad"></button>
             <button class="swatch" data-accent="#ff5c8a" type="button" style="--sw:#ff5c8a" aria-label="Pink"></button>
             <button class="swatch" data-accent="#7a5cff" type="button" style="--sw:#7a5cff" aria-label="Purple"></button>
             <button class="swatch" data-accent="#2fb8ff" type="button" style="--sw:#2fb8ff" aria-label="Blue"></button>
             <button class="swatch" data-accent="#21c58e" type="button" style="--sw:#21c58e" aria-label="Green"></button>
             <button class="swatch" data-accent="#ffb020" type="button" style="--sw:#ffb020" aria-label="Orange"></button>
             <label class="swatch swatch-picker" data-i18n-title="f.colorPicker"><input id="accent-picker" type="color" value="#ff5c8a" data-i18n-aria="f.colorPicker"></label>
+          </div>
+          <div id="grad-editor" class="grad-editor" hidden>
+            <div id="grad-bar" class="grad-bar"></div>
+            <div class="grad-row">
+              <div id="grad-stops" class="grad-stops"></div>
+              <span id="grad-count" class="muted small"></span>
+              <button id="grad-remove" class="btn btn-ghost btn-sm icon-btn" type="button" data-i18n-aria="f.grad.remove" data-i18n-title="f.grad.remove">−</button>
+              <button id="grad-add" class="btn btn-ghost btn-sm icon-btn" type="button" data-i18n-aria="f.grad.add" data-i18n-title="f.grad.add">＋</button>
+            </div>
           </div>
           <p class="hint" data-i18n="f.accent.hint"></p>
         </div>
@@ -512,15 +522,15 @@
 
   <script src="https://cdn.jsdelivr.net/npm/exifr@7.1.3/dist/full.umd.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
-  <script src="assets/i18n.js?v=15"></script>
+  <script src="assets/i18n.js?v=18"></script>
   <script src="assets/geo.js?v=2"></script>
   <script src="assets/exif.js?v=2"></script>
   <script src="assets/media.js?v=2"></script>
   <script src="assets/decode.js?v=2"></script>
   <script src="assets/crop.js?v=2"></script>
   <script src="assets/quotes.js?v=2"></script>
-  <script src="assets/templates.js?v=7"></script>
-  <script src="assets/templates-more.js?v=5"></script>
-  <script src="assets/app.js?v=15"></script>
+  <script src="assets/templates.js?v=18"></script>
+  <script src="assets/templates-more.js?v=17"></script>
+  <script src="assets/app.js?v=18"></script>
 </body>
 </html>
