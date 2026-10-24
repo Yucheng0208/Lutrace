@@ -672,8 +672,41 @@
       return `<button class="pal-chip${s.id === pal ? ' active' : ''}" type="button" data-skin="${s.id}" style="--c1:${c.paper};--c2:${c.deep}">
         <i aria-hidden="true"></i><span>${escapeHtml(nameOf(s))}</span></button>`;
     }).join('');
+    syncPalPages(true);
     $('mode-field').hidden = !tp.modes.length;
     $('mode-chips').innerHTML = tp.modes.map((m) => `<button class="chip${m.id === mode ? ' active' : ''}" type="button" data-mode="${m.id}">${escapeHtml(nameOf(m))}</button>`).join('');
+  }
+
+  /* 配色滑動列：一頁五個，切到目前選的那一頁，並更新頁點與箭頭 */
+  const PAL_PER_PAGE = 5;
+  function palPages() { return Math.ceil(tplNow().skins.length / PAL_PER_PAGE); }
+  function palPage() {
+    const g = $('skin-chips');
+    return g.clientWidth ? Math.round(g.scrollLeft / g.clientWidth) : 0;
+  }
+  function syncPalPages(jumpToActive) {
+    const g = $('skin-chips');
+    const n = palPages();
+    if (jumpToActive) {
+      const i = [...g.children].findIndex((c) => c.classList.contains('active'));
+      if (i >= 0 && g.clientWidth) {
+        const prev = g.style.scrollBehavior;
+        g.style.scrollBehavior = 'auto';
+        g.scrollLeft = Math.floor(i / PAL_PER_PAGE) * g.clientWidth;
+        g.style.scrollBehavior = prev;
+      }
+    }
+    const cur = palPage();
+    if ($('pal-dots').children.length !== n) $('pal-dots').innerHTML = Array.from({ length: n }, (_, i) => `<span data-page="${i}"></span>`).join('');
+    [...$('pal-dots').children].forEach((d, i) => d.classList.toggle('on', i === cur));
+  }
+  /** 換頁；超過最後一頁回到第一頁，第一頁往前則到最後一頁 */
+  let palTarget = null; // 捲動動畫進行中時，連按箭頭以目標頁為準
+  function goPalPage(i) {
+    const g = $('skin-chips');
+    const n = palPages();
+    palTarget = ((i % n) + n) % n;
+    g.scrollTo({ left: palTarget * g.clientWidth });
   }
 
   function syncVideoUi() {
@@ -1167,6 +1200,13 @@
     syncSkins();
     changed();
   });
+  let palScrollTimer = 0;
+  $('skin-chips').addEventListener('scroll', () => { clearTimeout(palScrollTimer); palScrollTimer = setTimeout(() => { palTarget = null; syncPalPages(false); }, 120); }, { passive: true });
+  $('pal-prev').addEventListener('click', () => goPalPage((palTarget ?? palPage()) - 1));
+  $('pal-next').addEventListener('click', () => goPalPage((palTarget ?? palPage()) + 1));
+  $('pal-dots').addEventListener('click', (e) => { const d = e.target.closest('[data-page]'); if (d) goPalPage(Number(d.dataset.page)); });
+  // 切到「風格」分頁時面板才有寬度，再對齊一次目前的配色
+  new ResizeObserver(() => syncPalPages(true)).observe($('skin-chips'));
   $('mode-chips').addEventListener('click', (e) => {
     const c = e.target.closest('[data-mode]');
     if (!c) return;

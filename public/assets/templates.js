@@ -483,7 +483,7 @@
    *  模板
    * ===================================================================== */
 
-  // 10 種配色（每個模板共用）：paper 主要表面、bg 背景、ink 文字、deep 點綴色
+  // 30 種配色（每個模板共用）：paper 主要表面、bg 背景、ink 文字、deep 點綴色
   const PALETTE = [
     { id: 'moon', zh: '月光白', en: 'Moonlight', ja: 'ムーンライト', paper: '#f7f5f0', bg: '#ebe7df', ink: '#1c1c1e', deep: '#8a8378' },
     { id: 'midnight', zh: '午夜黑', en: 'Midnight', ja: 'ミッドナイト', paper: '#1d1d23', bg: '#101014', ink: '#f2f2f5', deep: '#5a6aa0', dark: true },
@@ -495,6 +495,26 @@
     { id: 'lavender', zh: '薰衣草', en: 'Lavender', ja: 'ラベンダー', paper: '#ebe3fa', bg: '#d5c8f3', ink: '#3a2d63', deep: '#8c6be0' },
     { id: 'deepsea', zh: '深海藍', en: 'Deep Sea', ja: 'ディープシー', paper: '#16233a', bg: '#0b1526', ink: '#e8f0ff', deep: '#3f8cff', dark: true },
     { id: 'chroma', zh: '隨光色', en: 'Chroma', ja: 'クロマ', chroma: true, paper: '#fde6ee', bg: '#f8cddb', ink: '#4a1830', deep: '#ff5c8a' },
+    { id: 'sunset', zh: '落日橘', en: 'Sunset', ja: 'サンセット', paper: '#ffe4d2', bg: '#ffcaa6', ink: '#6b2e12', deep: '#f2733a' },
+    { id: 'peach', zh: '蜜桃奶', en: 'Peach Milk', ja: 'ピーチミルク', paper: '#ffe9e0', bg: '#ffd2c0', ink: '#5e3122', deep: '#f59a7a' },
+    { id: 'coral', zh: '珊瑚粉', en: 'Coral', ja: 'コーラル', paper: '#ffe0dc', bg: '#ffc1b8', ink: '#6a2420', deep: '#f2665a' },
+    { id: 'rosegold', zh: '玫瑰金', en: 'Rose Gold', ja: 'ローズゴールド', paper: '#f6e1dc', bg: '#ebc3b8', ink: '#5a2c26', deep: '#c98673' },
+    { id: 'burgundy', zh: '酒紅色', en: 'Burgundy', ja: 'バーガンディ', paper: '#3a1520', bg: '#250c13', ink: '#f8e6ea', deep: '#c8475f', dark: true },
+    { id: 'lemon', zh: '檸檬霜', en: 'Lemon Frost', ja: 'レモンフロスト', paper: '#fbf5d2', bg: '#f3e8a0', ink: '#4d4310', deep: '#d9b52a' },
+    { id: 'butter', zh: '奶油黃', en: 'Butter', ja: 'バター', paper: '#fff4d6', bg: '#ffe6a8', ink: '#4f3d10', deep: '#e6b23a' },
+    { id: 'caramel', zh: '焦糖棕', en: 'Caramel', ja: 'キャラメル', paper: '#f3e0cc', bg: '#e3c19c', ink: '#4a2c14', deep: '#b9733a' },
+    { id: 'cocoa', zh: '可可棕', en: 'Cocoa', ja: 'ココア', paper: '#2e2019', bg: '#1d140f', ink: '#f5e9e0', deep: '#c08a5a', dark: true },
+    { id: 'matcha', zh: '抹茶綠', en: 'Matcha', ja: '抹茶', paper: '#e6ecd2', bg: '#cfdcaa', ink: '#34401a', deep: '#7f9a3a' },
+    { id: 'mintice', zh: '薄荷冰', en: 'Mint Ice', ja: 'ミントアイス', paper: '#ddf5ec', bg: '#b8eadb', ink: '#1d4a3c', deep: '#3dbb94' },
+    { id: 'lake', zh: '湖水綠', en: 'Lake Teal', ja: 'レイクティール', paper: '#d6eeee', bg: '#addcdc', ink: '#164446', deep: '#2a9d9f' },
+    { id: 'forest', zh: '森林綠', en: 'Forest', ja: 'フォレスト', paper: '#17291f', bg: '#0d1a13', ink: '#e4f2e8', deep: '#4caf78', dark: true },
+    { id: 'sky', zh: '天空藍', en: 'Sky', ja: 'スカイ', paper: '#dff1ff', bg: '#bfe3ff', ink: '#13385a', deep: '#38a3ff' },
+    { id: 'seasalt', zh: '海鹽藍', en: 'Sea Salt', ja: 'シーソルト', paper: '#e2eef2', bg: '#c4dde6', ink: '#1e3b47', deep: '#5a9bb4' },
+    { id: 'grape', zh: '葡萄紫', en: 'Grape', ja: 'グレープ', paper: '#e7dcf0', bg: '#cdb5e2', ink: '#3a1f52', deep: '#7b3fa8' },
+    { id: 'nightfall', zh: '夜幕紫', en: 'Nightfall', ja: 'ナイトフォール', paper: '#231a3a', bg: '#150f26', ink: '#efe8ff', deep: '#9b7bff', dark: true },
+    { id: 'neon', zh: '霓虹粉', en: 'Neon Pink', ja: 'ネオンピンク', paper: '#1a0f1c', bg: '#0e0710', ink: '#ffe6f4', deep: '#ff4fa3', dark: true },
+    { id: 'afternoon', zh: '午後灰', en: 'Afternoon Grey', ja: 'アフタヌーングレー', paper: '#ecebe8', bg: '#d8d6d1', ink: '#2b2a28', deep: '#7a7670' },
+    { id: 'graphite', zh: '石墨灰', en: 'Graphite', ja: 'グラファイト', paper: '#2a2b2e', bg: '#1c1d20', ink: '#ececee', deep: '#9aa0aa', dark: true },
   ];
   /** 隨光色：依照片主色即時調出一組配色 */
   function resolvePal(p, accent) {

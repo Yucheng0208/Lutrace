@@ -20,7 +20,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Caveat:wght@700&family=DM+Serif+Display:ital@0;1&family=LXGW+WenKai+TC&family=Noto+Sans+TC:wght@100..900&family=Saira:wght@100..900&family=Space+Mono:wght@400;700&family=VT323&display=swap">
-  <link rel="stylesheet" href="assets/style.css?v=6">
+  <link rel="stylesheet" href="assets/style.css?v=7">
 </head>
 <body>
   <header class="topbar">
@@ -136,7 +136,12 @@
         <h2 data-i18n="sec.look"></h2>
         <div class="field" id="skin-field">
           <label data-i18n="f.skin"></label>
-          <div id="skin-chips" class="pal-grid"></div>
+          <div class="pal-carousel">
+            <button id="pal-prev" class="pal-nav prev" type="button" aria-label="Previous">‹</button>
+            <div id="skin-chips" class="pal-grid"></div>
+            <button id="pal-next" class="pal-nav next" type="button" aria-label="Next">›</button>
+          </div>
+          <div id="pal-dots" class="pal-dots" aria-hidden="true"></div>
         </div>
         <div class="field" id="mode-field" hidden>
           <label data-i18n="f.mode"></label>
@@ -471,15 +476,15 @@
 
   <script src="https://cdn.jsdelivr.net/npm/exifr@7.1.3/dist/full.umd.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
-  <script src="assets/i18n.js?v=5"></script>
+  <script src="assets/i18n.js?v=7"></script>
   <script src="assets/geo.js?v=2"></script>
   <script src="assets/exif.js?v=2"></script>
   <script src="assets/media.js?v=2"></script>
   <script src="assets/decode.js?v=2"></script>
   <script src="assets/crop.js?v=2"></script>
   <script src="assets/quotes.js?v=2"></script>
-  <script src="assets/templates.js?v=5"></script>
+  <script src="assets/templates.js?v=7"></script>
   <script src="assets/templates-more.js?v=5"></script>
-  <script src="assets/app.js?v=6"></script>
+  <script src="assets/app.js?v=9"></script>
 </body>
 </html>
