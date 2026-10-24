@@ -705,16 +705,29 @@ h2 { font-size: 13px; margin: 0 0 10px; font-weight: 650; }
 }
 .field textarea:focus, .quote-card textarea:focus { outline: 2px solid var(--primary); outline-offset: -1px; }
 
-/* 空白狀態 */
+/* 空白狀態：三張小卡，滑過或拖曳檔案時散開 */
+:root { --glow-1: rgba(255, 92, 138, .16); --glow-2: rgba(122, 92, 255, .16); }
+:root[data-theme="dark"] { --glow-1: rgba(255, 92, 138, .14); --glow-2: rgba(122, 92, 255, .18); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --glow-1: rgba(255, 92, 138, .14); --glow-2: rgba(122, 92, 255, .18); } }
+.dropzone {
+  background: radial-gradient(420px 260px at 30% 30%, var(--glow-1), transparent 70%),
+    radial-gradient(420px 260px at 70% 70%, var(--glow-2), transparent 70%);
+}
 .dz-cards { position: relative; width: 150px; height: 92px; margin: 0 auto 6px; }
 .dz-card {
   position: absolute; top: 10px; width: 64px; height: 76px; border-radius: 12px;
-  display: flex; align-items: center; justify-content: center; font-size: 26px; color: #fff;
-  box-shadow: 0 8px 20px rgba(0,0,0,.15);
+  display: flex; align-items: center; justify-content: center; color: #fff;
+  box-shadow: 0 8px 20px rgba(0,0,0,.15); transition: transform .25s cubic-bezier(.2, .9, .3, 1.2);
 }
+.dz-card svg { width: 28px; height: 28px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.dz-card svg .fill { fill: currentColor; stroke: none; }
 .dz-card.c1 { left: 6px; transform: rotate(-12deg); background: linear-gradient(160deg, #ff8fb1, #ff5c8a); }
-.dz-card.c2 { left: 43px; top: 0; z-index: 1; background: linear-gradient(160deg, #2b2b30, #111); }
-.dz-card.c3 { left: 80px; transform: rotate(12deg); background: linear-gradient(160deg, #a58bff, #7a5cff); }
+.dz-card.c2 { left: 43px; top: 0; z-index: 1; background: linear-gradient(160deg, #3a3a42, #111); }
+.dz-card.c3 { left: 80px; transform: rotate(12deg); background: linear-gradient(160deg, #a58bff, #6248e8); }
+.dropzone:hover .dz-card.c1, .stage-panel.dragging .dz-card.c1 { transform: translateX(-8px) rotate(-18deg); }
+.dropzone:hover .dz-card.c2, .stage-panel.dragging .dz-card.c2 { transform: translateY(-6px); }
+.dropzone:hover .dz-card.c3, .stage-panel.dragging .dz-card.c3 { transform: translateX(8px) rotate(18deg); }
+@media (prefers-reduced-motion: reduce) { .dz-card { transition: none; } }
 .dz-desc { max-width: 520px; margin: 0 auto 14px; }
 
 /* 模板選擇 */
