@@ -817,5 +817,6 @@ h2 { font-size: 13px; margin: 0 0 10px; font-weight: 650; }
 .pal-dots span { width: 6px; height: 6px; border-radius: 3px; background: var(--border); transition: width .2s, background .2s; cursor: pointer; }
 .pal-dots span.on { width: 16px; background: var(--primary); }
 
-/* 日期格式四個選項：字小一點才放得下 */
-.seg-compact .seg-btn { padding-left: 4px; padding-right: 4px; font-size: 12px; }
+/* 日期格式四個選項排成 2×2 */
+.seg.seg-compact { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2px; }
+.seg-compact .seg-btn { font-variant-numeric: tabular-nums; }
