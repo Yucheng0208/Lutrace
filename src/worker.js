@@ -259,7 +259,7 @@ async function searchSongs(request, url) {
         source: 'Apple Music',
       })),
     });
-  } catch {
-    return error(502, 'fetch_failed');
+  } catch (e) {
+    return new Response(JSON.stringify({ error: 'fetch_failed', detail: String(e && e.message) }), { status: 502, headers: { 'content-type': 'application/json' } });
   }
 }

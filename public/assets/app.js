@@ -1304,8 +1304,41 @@
   }
   const MUSIC_HOST = /(^|\.)(spotify\.com|music\.apple\.com|itunes\.apple\.com|youtube\.com|youtu\.be|kkbox\.com|soundcloud\.com|streetvoice\.com|bandcamp\.com|music\.line\.me|deezer\.com|tidal\.com|music\.amazon\.[a-z.]+)$/i;
 
+  // Apple 的公開 API 會限制雲端主機的流量，所以搜尋與 Apple Music 連結直接從瀏覽器查詢
+  const bigArt = (u) => (u ? u.replace(/\/\d+x\d+(bb)?(-\d+)?\.(jpg|png|webp)$/i, '/1500x1500bb.jpg') : '');
+  const fromItunes = (r) => ({
+    title: r.trackName || r.collectionName || '', artist: r.artistName || '', album: r.collectionName || '',
+    image: bigArt(r.artworkUrl100), thumb: r.artworkUrl100, year: (r.releaseDate || '').slice(0, 4), source: 'Apple Music',
+  });
+  async function itunes(path) {
+    const res = await fetch(`https://itunes.apple.com/${path}`, { credentials: 'omit' });
+    if (!res.ok) throw new Error(`itunes ${res.status}`);
+    return (await res.json()).results || [];
+  }
+  async function searchSongs(q) {
+    const cc = { 'zh-Hant': 'tw', ja: 'jp', en: 'us' }[I18n.lang] || 'tw';
+    try { return (await itunes(`search?media=music&entity=song&limit=10&country=${cc}&term=${encodeURIComponent(q)}`)).map(fromItunes); }
+    catch (e) {
+      const res = await fetch(`api/search?country=${cc}&q=${encodeURIComponent(q)}`);
+      if (!res.ok) throw new Error(`search ${res.status}`);
+      return (await res.json()).results || [];
+    }
+  }
+
   /** 解析音樂連結：取得歌名、歌手、專輯與封面網址 */
   async function musicInfo(href) {
+    const u = new URL(href);
+    if (/(^|\.)(music|itunes)\.apple\.com$/i.test(u.hostname)) {
+      const id = u.searchParams.get('i') || (u.pathname.match(/\/(\d+)\/?$/) || u.pathname.match(/id(\d+)/) || [])[1];
+      const cc = (u.pathname.match(/^\/([a-z]{2})\//i) || [, 'us'])[1];
+      if (id) {
+        try {
+          const rs = await itunes(`lookup?id=${id}&country=${cc}`);
+          const r = rs.find((x) => x.wrapperType === 'track') || rs[0];
+          if (r) return fromItunes(r);
+        } catch (e) { /* 改用 Worker */ }
+      }
+    }
     const res = await fetch(`api/music?url=${encodeURIComponent(href)}`);
     if (!res.ok) throw new Error(`music ${res.status}`);
     return res.json();
@@ -1394,12 +1427,7 @@
     renderSongs();
     try {
       if (/^https?:\/\//i.test(q)) songResults = [await musicInfo(q)];
-      else {
-        const cc = { 'zh-Hant': 'tw', ja: 'jp', en: 'us' }[I18n.lang] || 'tw';
-        const res = await fetch(`api/search?country=${cc}&q=${encodeURIComponent(q)}`);
-        if (!res.ok) throw new Error(`search ${res.status}`);
-        songResults = (await res.json()).results || [];
-      }
+      else songResults = await searchSongs(q);
       $('song-status').textContent = songResults.length ? '' : t('song.none');
     } catch (err) {
       console.warn(err);
