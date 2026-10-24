@@ -607,14 +607,11 @@
     updatePlaceStatus();
   }
 
-  /** 日期、時間格式按鈕上的範例：用今天的日期與現在時間 */
+  /** 日期格式按鈕上的範例用今天的日期 */
   function syncFormatExamples() {
     const now = new Date();
-    const dp = { y: now.getFullYear(), mo: now.getMonth() + 1, day: now.getDate(), h: now.getHours(), mi: now.getMinutes() };
+    const dp = { y: now.getFullYear(), mo: now.getMonth() + 1, day: now.getDate() };
     document.querySelectorAll('[data-date-format]').forEach((b) => { b.textContent = fmtDate(dp, b.dataset.dateFormat); });
-    document.querySelectorAll('[data-time-format]').forEach((b) => {
-      b.textContent = `${t(b.dataset.timeFormat === '12' ? 'f.time12' : 'f.time24')} ${fmtTime(dp, b.dataset.timeFormat)}`;
-    });
   }
 
   function syncSettingsUi() {
@@ -1518,7 +1515,7 @@
 
   /* ---------- 啟動 ---------- */
 
-  setInterval(syncFormatExamples, 30000); // 範例時間跟著走
+  setInterval(syncFormatExamples, 60000); // 過了午夜，範例日期跟著換
 
   document.querySelectorAll('.copyright-year').forEach((el) => { el.textContent = new Date().getFullYear(); });
 
