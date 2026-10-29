@@ -670,7 +670,7 @@
     { code: 'en', label: 'English', html: 'en', geo: 'en' },
     { code: 'ja', label: '日本語', html: 'ja', geo: 'ja,en' },
   ];
-  const STORE_KEY = 'guanghen.lang';
+  const STORE_KEY = 'lutrace.lang';
 
   function match(tag) {
     const t = String(tag || '').toLowerCase();

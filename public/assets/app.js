@@ -9,7 +9,7 @@
 
   /* ---------- 設定（記在瀏覽器） ---------- */
 
-  const SETTINGS_KEY = 'guanghen.settings';
+  const SETTINGS_KEY = 'lutrace.settings';
   const DEFAULTS = {
     tpl: 'ipod',
     skins: {},            // 每個模板各自記住配色（10 種）
@@ -64,13 +64,13 @@
   function applyUiTheme(value) {
     if (value === 'light' || value === 'dark') document.documentElement.dataset.theme = value;
     else delete document.documentElement.dataset.theme;
-    try { localStorage.setItem('guanghen.uiTheme', value); } catch (e) { /* ignore */ }
+    try { localStorage.setItem('lutrace.uiTheme', value); } catch (e) { /* ignore */ }
     $('ui-theme').value = value;
     document.querySelectorAll('[data-ui-theme]').forEach((b) => b.classList.toggle('active', b.dataset.uiTheme === value));
   }
   function initUiControls() {
     let uiTheme = 'auto';
-    try { uiTheme = localStorage.getItem('guanghen.uiTheme') || 'auto'; } catch (e) { /* ignore */ }
+    try { uiTheme = localStorage.getItem('lutrace.uiTheme') || 'auto'; } catch (e) { /* ignore */ }
     applyUiTheme(uiTheme);
     $('ui-theme').addEventListener('change', (e) => applyUiTheme(e.target.value));
     document.querySelectorAll('[data-ui-theme]').forEach((b) => b.addEventListener('click', () => applyUiTheme(b.dataset.uiTheme)));
@@ -1116,7 +1116,7 @@
         zip.file(name, await renderFull(p, progressHandler(label)));
       }
       setStatus(t('st.zipping'));
-      download(await zip.generateAsync({ type: 'blob' }), 'guanghen.zip');
+      download(await zip.generateAsync({ type: 'blob' }), 'lutrace.zip');
       setStatus(t('st.exportedN', { n: state.photos.length }));
     } catch (e) { console.error(e); setStatus(cancelled ? t('st.cancelled') : t('st.exportFail')); }
     finally { busy(false); }
@@ -1619,11 +1619,11 @@
     $('settings-panel').dataset.tab = name;
     document.querySelectorAll('#tabbar .tab, .inspector-tabs .itab').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.tab === name)));
     $('settings-panel').scrollTop = 0;
-    try { localStorage.setItem('guanghen.tab', name); } catch (e) { /* ignore */ }
+    try { localStorage.setItem('lutrace.tab', name); } catch (e) { /* ignore */ }
   }
   document.querySelectorAll('#tabbar .tab, .inspector-tabs .itab').forEach((b) => b.addEventListener('click', () => setTab(b.dataset.tab)));
   let savedTab = 'style';
-  try { savedTab = localStorage.getItem('guanghen.tab') || 'style'; } catch (e) { /* ignore */ }
+  try { savedTab = localStorage.getItem('lutrace.tab') || 'style'; } catch (e) { /* ignore */ }
   setTab(['style', 'text', 'place', 'export', 'more'].includes(savedTab) ? savedTab : 'style');
 
   window.addEventListener('langchange', () => {

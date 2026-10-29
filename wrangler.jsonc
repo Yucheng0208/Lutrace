@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "guanghen",
+  "name": "lutrace",
   "compatibility_date": "2026-10-19",
   // Worker 只處理 /api/*（從網址匯入照片 / 影片），其他請求直接由 public/ 的靜態檔案回應
   "main": "src/worker.js",
